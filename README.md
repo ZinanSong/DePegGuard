@@ -10,6 +10,15 @@ DePegGuard is a fully automated, permissionless insurance protocol that protects
 Built as a UCL MSc Financial Technology coursework project (COMP0163 Blockchain Technologies), the protocol demonstrates production-grade smart contract architecture applied to a real DeFi problem.
 
 ## Protocol Architecture
+DePegGuardCore        — cover issuance, depeg detection, batch settlement
+
+InsurancePool         — per-stablecoin liquidity pool, LP deposits, payouts
+
+CoverNFT (ERC-721)    — policy representation as transferable NFTs
+
+OracleAdapter         — Chainlink price ingestion, TWAP, staleness checks
+
+DPG Token (ERC-20)    — governance token
 ## Key Features
 
 - **Parametric triggers** — three severity levels (Mild <0.97, Moderate <0.90, Severe <0.80) with time-weighted average price (TWAP) detection
@@ -28,6 +37,7 @@ Built as a UCL MSc Financial Technology coursework project (COMP0163 Blockchain 
 | Severe | Price < 0.80 | 6 hours | ~8–12% of coverage |
 
 ## Premium Pricing Model
+Premium = C · r(σ) · S(τ) · D(T) · U(u)
 Where:
 - `r(σ)` — volatility-based risk factor (30-day rolling window)
 - `S(τ)` — severity multiplier (Mild: 1.0×, Moderate: 2.0×, Severe: 4.0×)
@@ -35,6 +45,24 @@ Where:
 - `U(u)` — utilization adjustment: `1 / (1 - u)`, convex to discourage oversubscription
 
 ## Repository Structure
+contracts/
+
+├── DepegGuardCore.sol      # Main contract: cover minting, depeg registration, settlement
+
+├── InsurancePool.sol       # Liquidity pool with LP deposits and core-controlled payouts
+
+├── CoverNFT.sol            # ERC-721 policy NFT
+
+├── OracleAdapter.sol       # Chainlink integration, TWAP, depeg state machine
+
+└── mocks/
+
+├── MockERC20.sol       # Test token
+
+└── MockV3Aggregator.sol # Mock Chainlink feed
+test/
+
+└── depegguard.test.js      # End-to-end Hardhat test suite
 ## Test Coverage
 
 End-to-end tests using Hardhat with mock oracle and mock ERC-20:
